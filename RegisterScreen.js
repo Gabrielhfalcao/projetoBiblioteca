@@ -73,28 +73,28 @@ const RegisterScreen = () => {
             <Text style={styles.subtitulo}>Cadastrar</Text>
           </View>
           <View style={{ flex: 3 }}>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 60 }}>
+            <View style={{ width: "80%", margin: "auto", marginBottom: 30 }}>
               <InputText
                 label="Nome"
                 value={nome}
                 onChangeText={setNome}
               />
             </View>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 60 }}>
+            <View style={{ width: "80%", margin: "auto", marginBottom: 30 }}>
               <InputText
                 label="Email"
                 value={email}
                 onChangeText={setEmail}
               />
             </View>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 60 }}>
+            <View style={{ width: "80%", margin: "auto", marginBottom: 30 }}>
               <InputText
                 label="Usuário"
                 value={usuario}
                 onChangeText={setUsuario}
               />
             </View>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 60 }}>
+            <View style={{ width: "80%", margin: "auto", marginBottom: 30 }}>
               <InputText
                 label="Senha"
                 value={senha}
@@ -102,7 +102,7 @@ const RegisterScreen = () => {
                 secureTextEntry={true}
               />
             </View>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 2 }}>
+            <View style={{ width: "80%", margin: "auto", marginBottom: 30 }}>
               <InputText
                 label="Telefone"
                 value={telefone}
@@ -110,7 +110,7 @@ const RegisterScreen = () => {
               />
             </View>
           </View>
-          <View style={{ flex: 1, width: '80%', margin: 'auto', marginTop: 30 }}>
+          <View style={{ flex: 1, width: '80%', margin: 'auto', marginTop: 60 }}>
             <ButtonForm onPress={handleRegister} buttonText="Cadastrar" />
           </View>
         </View>
