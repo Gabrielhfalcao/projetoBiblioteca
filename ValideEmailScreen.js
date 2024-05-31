@@ -29,7 +29,7 @@ const ValideEmailScreen = () => {
 
   const handleValidation = async () => {
     try {
-      const response = await fetch(`https://api-livros-nwwr.onrender.com/api/usuarios/validarEmail?token=${token}`);
+      const response = await fetch(`http://192.168.1.3:8080/api/usuarios/validarEmail?token=${token}`);
       const text = await response.text();
       
       if (response.ok) {

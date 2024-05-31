@@ -30,21 +30,30 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('https://api-livros-nwwr.onrender.com/api/auth/login', {
+      const response = await fetch('http://192.168.1.3:8080/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `emailOrUsuario=${emailOrUsuario}&senha=${senha}`
+        body:`emailOrUsuario=${emailOrUsuario}&senha=${senha}`
       });
-
       const text = await response.text();
       if (text === "Usuário ou senha incorretos.") {
         Alert.alert("Erro", "Usuário ou senha incorretos.");
       } else if (text === "Usuário já está logado.") {
         Alert.alert("Aviso", "Usuário já está logado.");
+        navigation.navigate('Homepage');
+      } else if (text === "Por favor, valide seu e-mail antes de fazer login.") {
+        Alert.alert("Aviso", text, [
+          { text: "OK", onPress: () => navigation.navigate('ValideEmail') }
+        ]);
       } else {
-        navigation.navigate('TestScreen');
+        const token = text;
+        await fetch(`http://192.168.1.3:8080/api/auth/dadosUsuario?token=${token}`)
+        .then(response => response.json())
+        .then(dadosUsuario => {
+          navigation.navigate('Homepage', { token, dadosUsuario});
+        }).catch(error => (console.error(error)));
       }
     } catch (error) {
       console.error(error);

@@ -32,7 +32,7 @@ const RegisterScreen = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('https://api-livros-nwwr.onrender.com/api/usuarios/cadastrarUsuario', {
+      const response = await fetch('http://192.168.1.3:8080/api/usuarios/cadastrarUsuario', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const RegisterScreen = () => {
       const text = await response.text();
       if (response.ok) {
         Alert.alert("Sucesso", "Usuário cadastrado com sucesso!", [
-          { text: "OK", onPress: () => navigation.navigate('ValideEmail') } // Navegue para ValideEmailScreen
+          { text: "OK", onPress: () => navigation.navigate('ValideEmail') } 
         ]);
       } else if (text === "Email já cadastrado") {
         Alert.alert("Erro", "Email já cadastrado.");

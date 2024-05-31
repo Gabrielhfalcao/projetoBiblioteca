@@ -8,7 +8,7 @@ const PostList = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('https://api-livros-nwwr.onrender.com/api/posts');
+        const response = await axios.get('http://192.168.1.3:8080/api/posts');
         setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -25,7 +25,7 @@ const PostList = () => {
           <View style={styles.imageColumn}>
             {post.fotoLivro1 ? (
               <Image
-                source={{ uri: `https://api-livros-nwwr.onrender.com/api/auth/imagem-livro/${post.id}/foto1` }}
+                source={{ uri: `http://192.168.1.3:8080/api/auth/imagem-livro/${post.id}/foto1` }}
                 style={styles.image}
               />
             ) : (

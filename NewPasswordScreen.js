@@ -30,7 +30,7 @@ const NewPasswordScreen = () => {
 
   const handleResetPassword = async () => {
     try {
-      const response = await fetch(`https://api-livros-nwwr.onrender.com/api/auth/resetPassword?token=${token}&newPassword=${newPassword}`, {
+      const response = await fetch(`http://192.168.1.3:8080/api/auth/resetPassword?token=${token}&newPassword=${newPassword}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
