@@ -8,8 +8,10 @@ import ValideEmailScreen from './ValideEmailScreen';
 import ResetPasswordScreen from './ResetPasswordScreen';
 import NewPasswordScreen from './NewPasswordScreen';
 import HomepageScreen from './HomepageScreen';
-import PostDetailScreen from './PostDetailScreen'; 
-import ProfileScreen from './ProfileScreen'; // Importe a tela de perfil aqui
+import PostDetailScreen from './PostDetailScreen';
+import ProfileScreen from './ProfileScreen';
+import EditPostScreen from './EditPostScreen'; // Importe a tela de edição de post aqui
+import AddPostScreen from './AddPostScreen'; // Importe a tela de adição de post aqui
 
 const Stack = createStackNavigator();
 
@@ -25,6 +27,8 @@ const App = () => {
         <Stack.Screen name="Homepage" component={HomepageScreen} options={{ headerShown: false }} />
         <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: 'Detalhes da Publicação' }} />
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} /> 
+        <Stack.Screen name="EditPost" component={EditPostScreen} options={{ title: 'Editar Publicação' }} /> 
+        <Stack.Screen name="AddPost" component={AddPostScreen} options={{ title: 'Adicionar Publicação' }} /> 
       </Stack.Navigator>
     </NavigationContainer>
   );

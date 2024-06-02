@@ -7,11 +7,15 @@ const HomepageScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const { dadosUsuario, token } = route.params; 
+  const { dadosUsuario, token } = route.params;
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('http://192.168.1.3:8080/api/posts');
+      const response = await fetch('http://192.168.1.3:8080/api/posts', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       setPosts(data);
       setLoading(false);
@@ -44,7 +48,7 @@ const HomepageScreen = ({ navigation, route }) => {
         contentContainerStyle={styles.container}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {posts.map(post => (
+        {posts.map((post) => (
           <PostPreview key={post.id} postId={post.id} />
         ))}
       </ScrollView>
@@ -53,12 +57,17 @@ const HomepageScreen = ({ navigation, route }) => {
           <Icon name="home" size={30} color="#1F3A5F" />
           <Text style={styles.footerText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerIcon} onPress={() => console.log('Add post')}>
+        <TouchableOpacity
+          style={styles.footerIcon}
+          onPress={() => navigation.navigate('AddPost', { token })}
+        >
           <Icon name="plus" size={30} color="#1F3A5F" />
           <Text style={styles.footerText}>Adicionar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerIcon} onPress={() => navigation.navigate('Profile', { dadosUsuario, token })}>
-          {/* Passando os dados do usuário para a tela de perfil */}
+        <TouchableOpacity
+          style={styles.footerIcon}
+          onPress={() => navigation.navigate('Profile', { dadosUsuario, token })}
+        >
           <Icon name="user" size={30} color="#1F3A5F" />
           <Text style={styles.footerText}>Perfil</Text>
         </TouchableOpacity>

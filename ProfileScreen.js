@@ -8,8 +8,7 @@ const ProfileScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('Publicados');
   const dadosUsuario = route.params?.dadosUsuario;
-  const token = route.params?.token; 
-  console.log("token:" + token)
+  const token = route.params?.token;
 
   useEffect(() => {
     const getProfileImage = async () => {
@@ -40,10 +39,10 @@ const ProfileScreen = ({ route, navigation }) => {
       if (response.ok) {
         navigation.replace('Login');
       } else {
-        
+        // Handle unsuccessful logout if needed
       }
     } catch (error) {
-      
+      console.error('Erro ao fazer logout:', error);
     }
   };
 
@@ -58,16 +57,6 @@ const ProfileScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.profileImageContainer}>
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
-          <Image
-            source={profileImage ? profileImage : require('./assets/user_icon.png')}
-            style={styles.profileImage}
-          />
-        )}
-      </View>
       <View style={styles.info}>
         <Text style={styles.title}>{dadosUsuario.nome}</Text>
         <Text style={styles.subtitle}>{dadosUsuario.usuario}</Text>
@@ -89,7 +78,7 @@ const ProfileScreen = ({ route, navigation }) => {
           />
         </View>
         <View style={styles.epacoListas}>
-          <PostList tab={selectedTab} dadosUsuario={dadosUsuario} navigation={navigation} />
+          <PostList tab={selectedTab} dadosUsuario={dadosUsuario} navigation={navigation} token={token} />
         </View>
       </View>
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -99,7 +88,7 @@ const ProfileScreen = ({ route, navigation }) => {
   );
 };
 
-const PostList = ({ tab, dadosUsuario, navigation }) => {
+const PostList = ({ tab, dadosUsuario, navigation, token }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -122,19 +111,21 @@ const PostList = ({ tab, dadosUsuario, navigation }) => {
     fetchPosts();
   }, [tab, dadosUsuario.id]);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
+  const removePost = (postId) => {
+    setPosts(posts.filter(post => post.id !== postId));
+  };
 
-  if (posts.length === 0) {
-    return <Text style={styles.errorText}>Nenhum post encontrado.</Text>;
-  }
-
-  return (
+  return loading ? (
+    <ActivityIndicator size="large" color="#0000ff" />
+  ) : posts.length === 0 ? (
+    <Text style={styles.errorText}>Nenhum post encontrado.</Text>
+  ) : (
     <FlatList
       data={posts}
       horizontal
-      renderItem={({ item }) => <PostPreview post={item} navigation={navigation} tab={tab} />}
+      renderItem={({ item }) => (
+        <PostPreview post={item} navigation={navigation} tab={tab} token={token} removePost={removePost} />
+      )}
       keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={styles.postList}
       showsHorizontalScrollIndicator={false}
@@ -145,15 +136,16 @@ const PostList = ({ tab, dadosUsuario, navigation }) => {
   );
 };
 
-const PostPreview = ({ post, navigation, tab }) => {
-  const handleEdit = () => {
-    console.log('Edit post:', post.id);
-  };
-
+const PostPreview = ({ post, navigation, tab, token, removePost }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showRemoveFavoriteModal, setShowRemoveFavoriteModal] = useState(false);
 
   const handleDelete = () => {
     setShowDeleteModal(true);
+  };
+
+  const handleRemoveFavorite = () => {
+    setShowRemoveFavoriteModal(true);
   };
 
   const confirmDelete = async () => {
@@ -164,12 +156,10 @@ const PostPreview = ({ post, navigation, tab }) => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
         console.log('Post excluído com sucesso:', post.id);
-        // Remova o post excluído da lista de posts
-        const updatedPosts = posts.filter(item => item.id !== post.id);
-        setPosts(updatedPosts); // Atualize a lista de posts
+        removePost(post.id);
       } else {
         console.error('Erro ao excluir o post:', post.id);
       }
@@ -177,6 +167,28 @@ const PostPreview = ({ post, navigation, tab }) => {
       console.error('Erro ao excluir o post:', error);
     } finally {
       setShowDeleteModal(false);
+    }
+  };
+
+  const confirmRemoveFavorite = async () => {
+    try {
+      const response = await fetch(`http://192.168.1.3:8080/api/auth/removeFavorito/${post.id}?token=${token}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        console.log('Post removido dos favoritos com sucesso:', post.id);
+        removePost(post.id);
+      } else {
+        console.error('Erro ao remover o post dos favoritos:', post.id);
+      }
+    } catch (error) {
+      console.error('Erro ao remover o post dos favoritos:', error);
+    } finally {
+      setShowRemoveFavoriteModal(false);
     }
   };
 
@@ -191,7 +203,7 @@ const PostPreview = ({ post, navigation, tab }) => {
       <View style={styles.buttonsContainer}>
         {tab === 'Publicados' && (
           <>
-            <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEdit}>
+            <TouchableOpacity style={[styles.button, styles.editButton]} onPress={() => navigation.navigate('EditPost', { post, token })}>
               <Icon name="pencil" size={20} color="black" />
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
@@ -200,7 +212,7 @@ const PostPreview = ({ post, navigation, tab }) => {
           </>
         )}
         {tab === 'Favoritados' && (
-          <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+          <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleRemoveFavorite}>
             <Icon name="delete" size={20} color="white" />
           </TouchableOpacity>
         )}
@@ -216,6 +228,21 @@ const PostPreview = ({ post, navigation, tab }) => {
             <View style={styles.modalButtons}>
               <Button title="Excluir" onPress={confirmDelete} />
               <Button title="Cancelar" onPress={() => setShowDeleteModal(false)} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        visible={showRemoveFavoriteModal}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Deseja remover o post dos favoritos?</Text>
+            <View style={styles.modalButtons}>
+              <Button title="Confirmar" onPress={confirmRemoveFavorite} />
+              <Button title="Cancelar" onPress={() => setShowRemoveFavoriteModal(false)} />
             </View>
           </View>
         </View>
@@ -248,122 +275,113 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 16,
   },
-  profileImageContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 0.47,
+  info: {
+    flex: 1,
+    marginTop: 30,
     backgroundColor: '#1F3A5F',
-},
-profileImage: {
-  width: 150,
-  height: 150,
-  borderRadius: 90,
-},
-info: {
-  flex: 1.05,
-  backgroundColor: '#1F3A5F',
-},
-segmentedControl: {
-  marginTop: 5,
-  alignItems: 'center',
-},
-segmentedButtons: {
-  backgroundColor: '#1F3A5F',
-  borderRadius: 0,
-},
-epacoListas: {
-  flex: 1,
-  backgroundColor: '#1F3A5F',
-  marginTop: 20,
-},
-alterarSenha: {
-  flex: 0.16,
-  backgroundColor: 'red',
-},
-logoutButton: {
-  backgroundColor: 'red',
-  padding: 10,
-  alignItems: 'center',
-  borderRadius: 10,
-  margin: 20,
-},
-logoutText: {
-  color: 'white',
-  fontSize: 16,
-  fontWeight: 'bold',
-},
-postList: {
-  paddingHorizontal: 10,
-},
-postPanel: {
-  backgroundColor: '#f0f0f0',
-  borderRadius: 10,
-  marginVertical: 10,
-  marginHorizontal: 10,
-  padding: 10,
-  width: 150,
-},
-postImage: {
-  width: '100%',
-  height: 150,
-  borderRadius: 10,
-  marginBottom: 10,
-},
-postTitle: {
-  fontSize: 18,
-  fontWeight: 'bold',
-  marginBottom: 5,
-},
-postAuthor: {
-  fontSize: 16,
-  color: '#555',
-  marginBottom: 5,
-},
-postUser: {
-  fontSize: 14,
-  color: '#777',
-},
-buttonsContainer: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  marginTop: 10,
-},
-button: {
-  padding: 10,
-  borderRadius: 5,
-},
-editButton: {
-  backgroundColor: 'yellow',
-},
-deleteButton: {
-  backgroundColor: 'red',
-},
-errorText: {
-  color: 'red',
-  textAlign: 'center',
-  marginTop: 20,
-},
-modalContainer: {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-},
-modalContent: {
-  backgroundColor: 'white',
-  borderRadius: 10,
-  padding: 20,
-  alignItems: 'center',
-},
-modalText: {
-  fontSize: 18,
-  marginBottom: 20,
-},
-modalButtons: {
-  flexDirection: 'row',
-  justifyContent: 'space-around',
-},
-});
+  },
+  segmentedControl: {
+    marginTop: 5,
+    alignItems: 'center',
 
-export default ProfileScreen;
-
+  },
+  segmentedButtons: {
+    backgroundColor: '#1F3A5F',
+    width: '88%',
+    borderRadius: 0,
+  },
+  epacoListas: {
+    flex: 1,
+    backgroundColor: '#1F3A5F',
+    marginTop: 20,
+  },
+  logoutButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 10,
+    margin: 20,
+  },
+  logoutText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  postList: {
+    paddingHorizontal: 10,
+  },
+  postPanel: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    marginVertical: 10,
+    marginHorizontal: 10,
+    padding: 10,
+    width: 150,
+  },
+  postImage: {
+    width: '100%',
+    height: '65%',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  postTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  postAuthor: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 5,
+  },
+  postUser: {
+    fontSize: 14,
+    color: '#777',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    },
+    button: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    editButton: {
+      backgroundColor: '#ffd700',
+    },
+    deleteButton: {
+      backgroundColor: 'red',
+    },
+    modalContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+      backgroundColor: 'white',
+      padding: 20,
+      borderRadius: 10,
+      alignItems: 'center',
+    },
+    modalText: {
+      fontSize: 16,
+      marginBottom: 10,
+    },
+    modalButtons: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      width: '100%',
+    },
+    errorText: {
+      color: 'red',
+      fontSize: 16,
+      textAlign: 'center',
+      marginTop: 10,
+    },
+    });
+    
+    export default ProfileScreen;

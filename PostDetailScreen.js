@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { TextInput, Button } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native'; // Importação do useNavigation
 
 const PostDetailScreen = ({ route }) => {
   const { postId } = route.params;
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSlide, setActiveSlide] = useState(0);
+  const navigation = useNavigation(); 
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -23,6 +26,27 @@ const PostDetailScreen = ({ route }) => {
     fetchPost();
   }, [postId]);
 
+  const handleAddToFavorites = async () => {
+    try {
+      const token = token; 
+      const response = await fetch(`http://192.168.1.3:8080/api/auth/addFavorito?token=${token}&postId=${postId}`, {
+        method: 'POST',
+      });
+      const data = await response.text();
+      console.log(data)
+      console.log(token)
+      if (data === "Usuário não está logado.") {
+        navigation.navigate('Login'); 
+      } else if (data === "Post já está nos favoritos.") {
+        Alert.alert('Atenção', data); 
+      } else if (data === "Post adicionado aos favoritos com sucesso.") {
+        navigation.navigate('Homepage'); 
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar aos favoritos:', error);
+    }
+  };
+
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -34,6 +58,7 @@ const PostDetailScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <FlatList
+        style={{ flex: 1 }}
         data={[
           `http://192.168.1.3:8080/api/auth/imagem-livro/${postId}/foto1`,
           `http://192.168.1.3:8080/api/auth/imagem-livro/${postId}/foto2`
@@ -57,11 +82,21 @@ const PostDetailScreen = ({ route }) => {
         <Text style={styles.paginationText}>{activeSlide + 1} / 2</Text>
       </View>
       <View style={styles.content}>
-        <Text style={styles.title}>{post.livro.titulo}</Text>
-        <Text style={styles.description}>{post.descricao}</Text>
-        <Text style={styles.infoTitle}>Informações do Anunciante</Text>
-        <Text style={styles.infoText}>Nome: {post.usuario.nome}</Text>
-        <Text style={styles.infoText}>Telefone: {post.usuario.telefone}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title}>{post.livro.titulo}</Text>
+          <Text style={styles.description}>Autor: {post.livro.autor}</Text>
+          <Text style={styles.description}>Descrição: {post.descricao}</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.infoTitle}>Informações do Anunciante</Text>
+          <Text style={styles.infoText}>Nome: {post.usuario.nome}</Text>
+          <Text style={styles.infoText}>Telefone: {post.usuario.telefone}</Text>
+          </View>
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity style={styles.addButton} onPress={handleAddToFavorites}>
+            <Text style={{ color: 'white' }}>Adicionar a favoritos</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -72,12 +107,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#1F3A5F',
     flex: 1,
   },
+  addButton: {
+    backgroundColor: 'red',
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 10,
+    margin: 20,
+  },
   slide: {
     width: Dimensions.get('window').width,
     height: 400,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    flex: 1,
   },
   image: {
     width: '100%',
@@ -85,11 +128,11 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: 'bold',
     color: 'white',
-    marginTop: 20,
     paddingHorizontal: 20,
+    marginTop: 20
   },
   description: {
     fontSize: 16,
@@ -112,7 +155,7 @@ const styles = StyleSheet.create({
   },
   pagination: {
     position: 'absolute',
-    bottom: 10,
+    top: 10,
     right: 10,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 15,
@@ -124,7 +167,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   content: {
-    padding: 20,
+    paddingLeft: 20,
+    paddingRight: 20,
+    flex: 1,
+    alignContent: 'flex-start'
   },
 });
 
