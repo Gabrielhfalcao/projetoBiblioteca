@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert, Dimensions } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native'; // Importação do useNavigation
+import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert, Dimensions } from 'react-native'
+import { useNavigation } from '@react-navigation/native';
 
 const PostDetailScreen = ({ route }) => {
   const { postId } = route.params;
@@ -28,13 +27,11 @@ const PostDetailScreen = ({ route }) => {
 
   const handleAddToFavorites = async () => {
     try {
-      const token = token; 
-      const response = await fetch(`http://192.168.1.3:8080/api/auth/addFavorito?token=${token}&postId=${postId}`, {
+      const token = 'YOUR_TOKEN_HERE'; 
+      const response = await fetch(`http://192.168.1.3:8080/api/addFavorito?token=${token}&postId=${postId}`, {
         method: 'POST',
       });
-      const data = await response.text();
-      console.log(data)
-      console.log(token)
+      const data = await response.text(); // Alteração para obter a resposta como texto
       if (data === "Usuário não está logado.") {
         navigation.navigate('Login'); 
       } else if (data === "Post já está nos favoritos.") {

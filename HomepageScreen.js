@@ -49,7 +49,7 @@ const HomepageScreen = ({ navigation, route }) => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         {posts.map((post) => (
-          <PostPreview key={post.id} postId={post.id} />
+          <PostPreview key={post.id} postId={post.id} token={token} />
         ))}
       </ScrollView>
       <View style={styles.footer}>

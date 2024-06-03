@@ -32,7 +32,7 @@ const PostPreview = ({ postId }) => {
   }
 
   return (
-    <TouchableOpacity style={styles.panel} onPress={() => navigation.navigate('PostDetail', { postId, token })}>
+    <TouchableOpacity style={styles.panel} onPress={() => navigation.navigate('PostDetail', { postId })}>
       <View style={styles.column}>
         <Image
           source={{ uri: `http://192.168.1.3:8080/api/auth/imagem-livro/${postId}/foto1` }}
