@@ -10,6 +10,8 @@ const ProfileScreen = ({ route, navigation }) => {
   const dadosUsuario = route.params?.dadosUsuario;
   const token = route.params?.token;
 
+  console.log(token)
+
   useEffect(() => {
     const getProfileImage = async () => {
       try {
@@ -39,7 +41,6 @@ const ProfileScreen = ({ route, navigation }) => {
       if (response.ok) {
         navigation.replace('Login');
       } else {
-        // Handle unsuccessful logout if needed
       }
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
@@ -78,7 +79,7 @@ const ProfileScreen = ({ route, navigation }) => {
           />
         </View>
         <View style={styles.epacoListas}>
-          <PostList tab={selectedTab} dadosUsuario={dadosUsuario} navigation={navigation} token={token} />
+          <PostList tab={selectedTab} dadosUsuario={dadosUsuario} navigation={navigation} token={token}/>
         </View>
       </View>
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -124,7 +125,7 @@ const PostList = ({ tab, dadosUsuario, navigation, token }) => {
       data={posts}
       horizontal
       renderItem={({ item }) => (
-        <PostPreview post={item} navigation={navigation} tab={tab} token={token} removePost={removePost} />
+        <PostPreview post={item} navigation={navigation} tab={tab} token={token} dadosUsuario={dadosUsuario} removePost={removePost} />
       )}
       keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={styles.postList}

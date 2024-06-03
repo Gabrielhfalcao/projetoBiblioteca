@@ -2,15 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const PostPreview = ({ postId }) => {
+const PostPreview = ({ postId, token, dadosUsuario }) => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
-
+  
+  console.log(token)
+  console.log(dadosUsuario)
+  
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await fetch(`http://192.168.1.3:8080/api/posts/${postId}`);
+        const response = await fetch(`http://192.168.1.3:8080/api/posts/${postId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setPost(data);
         setLoading(false);
@@ -21,7 +28,7 @@ const PostPreview = ({ postId }) => {
     };
 
     fetchPost();
-  }, [postId]);
+  }, [postId, token]);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -32,7 +39,7 @@ const PostPreview = ({ postId }) => {
   }
 
   return (
-    <TouchableOpacity style={styles.panel} onPress={() => navigation.navigate('PostDetail', { postId })}>
+    <TouchableOpacity style={styles.panel} onPress={() => navigation.navigate('PostDetail', { postId, token })}>
       <View style={styles.column}>
         <Image
           source={{ uri: `http://192.168.1.3:8080/api/auth/imagem-livro/${postId}/foto1` }}

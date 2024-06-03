@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert, Dimensions } from 'react-native'
+import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const PostDetailScreen = ({ route }) => {
-  const { postId } = route.params;
+  const { postId, token } = route.params;
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -12,7 +12,11 @@ const PostDetailScreen = ({ route }) => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await fetch(`http://192.168.1.3:8080/api/posts/${postId}`);
+        const response = await fetch(`http://192.168.1.3:8080/api/posts/${postId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setPost(data);
         setLoading(false);
@@ -23,23 +27,29 @@ const PostDetailScreen = ({ route }) => {
     };
 
     fetchPost();
-  }, [postId]);
+  }, [postId, token]);
 
   const handleAddToFavorites = async () => {
     try {
-      const token = 'YOUR_TOKEN_HERE'; 
-      const response = await fetch(`http://192.168.1.3:8080/api/addFavorito?token=${token}&postId=${postId}`, {
+      const response = await fetch(`http://192.168.1.3:8080/api/auth/addFavorito?token=${token}&postId=${postId}`, {
         method: 'POST',
       });
-      const data = await response.text(); // Alteração para obter a resposta como texto
+      const data = await response.text();
       if (data === "Usuário não está logado.") {
+        console.log(data)
         navigation.navigate('Login'); 
       } else if (data === "Post já está nos favoritos.") {
+        console.log(data)
         Alert.alert('Atenção', data); 
       } else if (data === "Post adicionado aos favoritos com sucesso.") {
-        navigation.navigate('Homepage'); 
+        console.log(data)
+        navigation.navigate('Profile'); 
+      }
+      else {
+        navigation.navigate('Homepage');
       }
     } catch (error) {
+      console.log(data)
       console.error('Erro ao adicionar aos favoritos:', error);
     }
   };
@@ -88,7 +98,7 @@ const PostDetailScreen = ({ route }) => {
           <Text style={styles.infoTitle}>Informações do Anunciante</Text>
           <Text style={styles.infoText}>Nome: {post.usuario.nome}</Text>
           <Text style={styles.infoText}>Telefone: {post.usuario.telefone}</Text>
-          </View>
+        </View>
         <View style={{ flex: 1 }}>
           <TouchableOpacity style={styles.addButton} onPress={handleAddToFavorites}>
             <Text style={{ color: 'white' }}>Adicionar a favoritos</Text>
