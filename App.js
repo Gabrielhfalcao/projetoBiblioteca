@@ -10,8 +10,8 @@ import NewPasswordScreen from './NewPasswordScreen';
 import HomepageScreen from './HomepageScreen';
 import PostDetailScreen from './PostDetailScreen';
 import ProfileScreen from './ProfileScreen';
-import EditPostScreen from './EditPostScreen'; // Importe a tela de edição de post aqui
-import AddPostScreen from './AddPostScreen'; // Importe a tela de adição de post aqui
+import EditPostScreen from './EditPostScreen'; 
+import AddPostScreen from './AddPostScreen'; 
 
 const Stack = createStackNavigator();
 

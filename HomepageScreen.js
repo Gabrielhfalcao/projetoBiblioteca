@@ -17,7 +17,6 @@ const HomepageScreen = ({ navigation, route }) => {
         },
       });
       const data = await response.json();
-      // Ordenar os posts por ID em ordem decrescente
       const sortedPosts = data.sort((a, b) => b.id - a.id);
       setPosts(sortedPosts);
       setLoading(false);

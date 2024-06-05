@@ -28,7 +28,7 @@ const RegisterScreen = () => {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
   const [telefone, setTelefone] = useState("");
-  const navigation = useNavigation(); // Obtenha o objeto de navegação
+  const navigation = useNavigation();
 
   const handleRegister = async () => {
     try {
