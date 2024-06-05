@@ -204,9 +204,7 @@ const PostPreview = ({ post, navigation, tab, token, removePost }) => {
       <View style={styles.buttonsContainer}>
         {tab === 'Publicados' && (
           <>
-            <TouchableOpacity style={[styles.button, styles.editButton]} onPress={() => navigation.navigate('EditPost', { post, token })}>
-              <Icon name="pencil" size={20} color="black" />
-            </TouchableOpacity>
+            
             <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
               <Icon name="delete" size={20} color="white" />
             </TouchableOpacity>

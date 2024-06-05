@@ -64,8 +64,8 @@ const RegisterScreen = () => {
       <View style={{ flex: 10 }}>
         <View style={styles.espacoTitulo}>
           <Image
-            source={require('./assets/imagem_2024-05-22_172219494-removebg-preview 1.png')}
-            style={{ width: 150, height: 150 }}
+            source={require('./assets/Group 9.png')}
+            style={{ width: 150, height: 50 }}
           />
         </View>
         <View style={{ flex: 25 }}>

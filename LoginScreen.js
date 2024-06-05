@@ -67,8 +67,8 @@ const LoginScreen = () => {
       <View style={{ flex: 10 }}>
         <View style={styles.espacoTitulo}>
           <Image
-            source={require('./assets/imagem_2024-05-22_172219494-removebg-preview 1.png')}
-            style={{ width: 220, height: 220 }}
+            source={require('./assets/Group 9.png')}
+            style={{ width: 220, height: 70 }}
           />
         </View>
         <View style={{ flex: 3 }}>
