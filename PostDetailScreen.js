@@ -37,7 +37,7 @@ const PostDetailScreen = ({ route }) => {
       const data = await response.text();
       if (data === "Usuário não está logado.") {
         console.log(data)
-        navigation.navigate('Login'); 
+        navigation.navigate('Homepage'); 
       } else if (data === "Post já está nos favoritos.") {
         console.log(data)
         Alert.alert('Atenção', data); 
