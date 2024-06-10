@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import config from './config';
 
 const InputText = ({ label, value, onChangeText }) => (
   <TextInput
@@ -23,26 +24,26 @@ const ButtonForm = ({ onPress }) => (
 );
 
 const ValideEmailScreen = () => {
-  const [token, setToken] = useState("");
-  const [response, setResponse] = useState("");
+  const [token, setToken] = useState('');
+  const [response, setResponse] = useState('');
   const navigation = useNavigation();
 
   const handleValidation = async () => {
     try {
-      const response = await fetch(`http://192.168.1.3:8080/api/usuarios/validarEmail?token=${token}`);
+      const response = await fetch(`${config.apiBaseUrl}/api/usuarios/validarEmail?token=${token}`);
       const text = await response.text();
       
       if (response.ok) {
-        Alert.alert("Sucesso", text, [
-          { text: "OK", onPress: () => navigation.navigate('Login') }
+        Alert.alert('Sucesso', text, [
+          { text: 'OK', onPress: () => navigation.navigate('Login') }
         ]);
       } else {
         setResponse(text);
-        Alert.alert("Erro", text);
+        Alert.alert('Erro', text);
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Erro", "Erro ao conectar ao servidor");
+      Alert.alert('Erro', 'Erro ao conectar ao servidor');
     }
   };
 
@@ -59,7 +60,7 @@ const ValideEmailScreen = () => {
       <View style={styles.buttonContainer}>
         <ButtonForm onPress={handleValidation} />
       </View>
-      {response !== "" && (
+      {response !== '' && (
         <View style={styles.responseContainer}>
           <Text style={styles.responseText}>{response}</Text>
         </View>

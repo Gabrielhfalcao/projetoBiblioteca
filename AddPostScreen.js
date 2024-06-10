@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet, Alert, Ima
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
+import config from './config'; 
 
 const AddPostScreen = ({ route, navigation }) => {
   const { token } = route.params;
@@ -14,7 +15,6 @@ const AddPostScreen = ({ route, navigation }) => {
   const [fotoLivro1, setFotoLivro1] = useState(null);
   const [fotoLivro2, setFotoLivro2] = useState(null);
   const [categorias, setCategorias] = useState([]);
-  const [forceUpdate, setForceUpdate] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -22,7 +22,7 @@ const AddPostScreen = ({ route, navigation }) => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://192.168.1.3:8080/api/categorias');
+      const response = await fetch(`${config.apiBaseUrl}/api/categorias`);
       const data = await response.json();
       setCategorias(data);
     } catch (error) {
@@ -100,7 +100,7 @@ const AddPostScreen = ({ route, navigation }) => {
         });
       }
 
-      const response = await fetch('http://192.168.1.3:8080/api/auth/addPost', {
+      const response = await fetch(`${config.apiBaseUrl}/api/auth/addPost`, {
         method: 'POST',
         body: formData,
         headers: {
@@ -229,3 +229,4 @@ const styles = StyleSheet.create({
 });
 
 export default AddPostScreen;
+

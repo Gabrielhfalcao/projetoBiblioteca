@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOp
 import { useNavigation } from '@react-navigation/native';
 import config from './config'; 
 
-const PostDetailScreen = ({ route }) => {
+const PostDetailProfileScreen = ({ route }) => {
   const { postId, token } = route.params;
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -93,7 +93,7 @@ const PostDetailScreen = ({ route }) => {
           <Text style={styles.description}>Autor: {post.livro.autor}</Text>
           <Text style={styles.description}>Descrição: {post.descricao}</Text>
         </View>
-        <View style={{ flex: 1, paddingTop: 40 }}>
+        <View style={{ flex: 1 }}>
           <Text style={styles.infoTitle}>Informações do Anunciante</Text>
           <Text style={styles.infoText}>Nome: {post.usuario.nome}</Text>
           <Text style={styles.infoText}>Telefone: {post.usuario.telefone}</Text>
@@ -180,4 +180,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostDetailScreen;
+export default PostDetailProfileScreen;

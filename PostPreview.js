@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import config from './config';
 
 const PostPreview = ({ postId, token, dadosUsuario }) => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   
-  console.log(token)
-  console.log(dadosUsuario)
+  console.log(token);
+  console.log(dadosUsuario);
   
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await fetch(`http://192.168.1.3:8080/api/posts/${postId}`, {
+        const response = await fetch(`${config.apiBaseUrl}/api/posts/${postId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -42,7 +43,7 @@ const PostPreview = ({ postId, token, dadosUsuario }) => {
     <TouchableOpacity style={styles.panel} onPress={() => navigation.navigate('PostDetail', { postId, token })}>
       <View style={styles.column}>
         <Image
-          source={{ uri: `http://192.168.1.3:8080/api/auth/imagem-livro/${postId}/foto1` }}
+          source={{ uri: `${config.apiBaseUrl}/api/auth/imagem-livro/${postId}/foto1` }}
           style={styles.image}
         />
       </View>

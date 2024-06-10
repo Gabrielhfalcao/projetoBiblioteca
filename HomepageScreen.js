@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, ActivityIndicator, Text, View, TouchableOpacity, RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PostPreview from './PostPreview';
+import config from './config'; 
 
 const HomepageScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
@@ -11,7 +12,7 @@ const HomepageScreen = ({ navigation, route }) => {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('http://192.168.1.3:8080/api/posts', {
+      const response = await fetch(`${config.apiBaseUrl}/api/posts`, { 
         headers: {
           Authorization: `Bearer ${token}`,
         },

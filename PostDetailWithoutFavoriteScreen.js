@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, FlatList, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import config from './config'; 
 
-const PostDetailScreen = ({ route }) => {
+const PostDetailWithoutFavoriteScreen = ({ route }) => {
   const { postId, token } = route.params;
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,29 +29,6 @@ const PostDetailScreen = ({ route }) => {
 
     fetchPost();
   }, [postId, token]);
-
-  const handleAddToFavorites = async () => {
-    try {
-      const response = await fetch(`${config.apiBaseUrl}/api/auth/addFavorito?token=${token}&postId=${postId}`, {
-        method: 'POST',
-      });
-      const data = await response.text();
-      if (data === "Usuário não está logado.") {
-        console.log(data)
-        navigation.navigate('Homepage'); 
-      } else if (data === "Post já está nos favoritos.") {
-        console.log(data)
-        Alert.alert('Atenção', data); 
-      } else if (data === "Post adicionado aos favoritos com sucesso.") {
-        console.log(data)
-        navigation.navigate('Profile'); 
-      } else {
-        navigation.navigate('Homepage');
-      }
-    } catch (error) {
-      console.error('Erro ao adicionar aos favoritos:', error);
-    }
-  };
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -93,15 +70,10 @@ const PostDetailScreen = ({ route }) => {
           <Text style={styles.description}>Autor: {post.livro.autor}</Text>
           <Text style={styles.description}>Descrição: {post.descricao}</Text>
         </View>
-        <View style={{ flex: 1, paddingTop: 40 }}>
+        <View style={{ flex: 1 }}>
           <Text style={styles.infoTitle}>Informações do Anunciante</Text>
           <Text style={styles.infoText}>Nome: {post.usuario.nome}</Text>
           <Text style={styles.infoText}>Telefone: {post.usuario.telefone}</Text>
-        </View>
-        <View style={{ flex: 1 }}>
-          <TouchableOpacity style={styles.addButton} onPress={handleAddToFavorites}>
-            <Text style={{ color: 'white' }}>Adicionar a favoritos</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -112,13 +84,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#1F3A5F',
     flex: 1,
-  },
-  addButton: {
-    backgroundColor: 'red',
-    padding: 10,
-    alignItems: 'center',
-    borderRadius: 10,
-    margin: 20,
   },
   slide: {
     width: Dimensions.get('window').width,
@@ -180,4 +145,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostDetailScreen;
+export default PostDetailWithoutFavoriteScreen;

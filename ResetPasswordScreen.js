@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { TextInput, Button } from 'react-native-paper';
+import config from './config'; 
 
 const InputText = ({ label, value, onChangeText }) => (
   <TextInput
@@ -23,12 +24,12 @@ const ButtonForm = ({ onPress, buttonText }) => (
 );
 
 const ResetPasswordScreen = () => {
-  const [email, setEmail] = React.useState('');
+  const [email, setEmail] = useState('');
   const navigation = useNavigation();
 
   const handleResetPassword = async () => {
     try {
-      const response = await fetch('http://192.168.1.3:8080/api/auth/requestPasswordReset', {
+      const response = await fetch(`${config.apiBaseUrl}/api/auth/requestPasswordReset`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -50,49 +51,45 @@ const ResetPasswordScreen = () => {
   };
 
   return (
-    <View style={styles.area}>
-      <View style={{ flex: 2 }}></View>
-      <View style={{ flex: 5 }}>
-        <View style={styles.espacoTitulo}>
-          <Text style={styles.subtitulo}>Digite seu email</Text>
-        </View>
-        <View style={styles.espacoInput}>
-          <InputText
-            label="Email"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
-        <View style={{ flex: 1, width: '80%', margin: 'auto' }}>
-          <ButtonForm onPress={handleResetPassword} buttonText="Enviar" />
-        </View>
+    <View style={styles.container}>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Digite seu email</Text>
       </View>
-      <View style={{ flex: 2 }}></View>
+      <View style={styles.inputContainer}>
+        <InputText
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <ButtonForm onPress={handleResetPassword} buttonText="Enviar" />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  area: {
+  container: {
     flex: 1,
     backgroundColor: '#1F3A5F',
-  },
-  espacoTitulo: {
-    flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  subtitulo: {
+  titleContainer: {
+    marginBottom: 30,
+  },
+  title: {
     color: 'white',
     fontSize: 30,
     fontFamily: 'Roboto',
   },
-  espacoInput: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  inputContainer: {
     width: '80%',
-    margin: 'auto',
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    width: '80%',
   },
 });
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import config from './config'; 
 
 const InputText = ({ label, value, onChangeText }) => (
   <TextInput
@@ -32,7 +33,7 @@ const RegisterScreen = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await fetch('http://192.168.1.3:8080/api/usuarios/cadastrarUsuario', {
+      const response = await fetch(`${config.apiBaseUrl}/api/usuarios/cadastrarUsuario`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,60 +60,58 @@ const RegisterScreen = () => {
   };
 
   return (
-    <View style={styles.area}>
-      <View style={{ flex: 2 }}></View>
-      <View style={{ flex: 10 }}>
-        <View style={styles.espacoTitulo}>
-          <Image
-            source={require('./assets/Group 9.png')}
-            style={{ width: 150, height: 50 }}
-          />
+    <View style={styles.container}>
+      <View style={styles.logoContainer}>
+        <Image
+          source={require('./assets/Group 9.png')}
+          style={styles.logo}
+        />
+      </View>
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Cadastrar</Text>
+        <View style={{marginBottom: 20 }}>
+        <InputText
+          label="Nome"
+          value={nome}
+          onChangeText={setNome}
+        />
         </View>
-        <View style={{ flex: 25 }}>
-          <View style={styles.espacoSubtitulo}>
-            <Text style={styles.subtitulo}>Cadastrar</Text>
-          </View>
-          <View style={{ flex: 3 }}>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 60 }}>
-              <InputText
-                label="Nome"
-                value={nome}
-                onChangeText={setNome}
-              />
-            </View>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 60 }}>
-              <InputText
-                label="Email"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 60 }}>
-              <InputText
-                label="Usuário"
-                value={usuario}
-                onChangeText={setUsuario}
-              />
-            </View>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 60 }}>
-              <InputText
-                label="Senha"
-                value={senha}
-                onChangeText={setSenha}
-                secureTextEntry={true}
-              />
-            </View>
-            <View style={{ width: "80%", margin: "auto", marginBottom: 2 }}>
-              <InputText
-                label="Telefone"
-                value={telefone}
-                onChangeText={setTelefone}
-              />
-            </View>
-          </View>
-          <View style={{ flex: 1, width: '80%', margin: 'auto', marginTop: 30 }}>
-            <ButtonForm onPress={handleRegister} buttonText="Cadastrar" />
-          </View>
+
+        <View style={{marginBottom: 20 }}>
+        <InputText
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+        />
+        </View>
+        
+        <View style={{marginBottom: 20 }}>
+        <InputText
+          label="Senha"
+          value={senha}
+          onChangeText={setSenha}
+          secureTextEntry={true}
+        />
+        </View>
+
+        <View style={{marginBottom: 20 }}>
+        <InputText
+          label="Usuário"
+          value={usuario}
+          onChangeText={setUsuario}
+        />
+        </View>
+
+        <View style={{marginBottom: 20 }}>
+        <InputText
+          label="Telefone"
+          value={telefone}
+          onChangeText={setTelefone}
+        />
+        </View>
+
+        <View style={{marginBottom: 20 }}>
+        <ButtonForm onPress={handleRegister} buttonText="Cadastrar" style={{ marginTop: 10 }}/>
         </View>
       </View>
     </View>
@@ -120,36 +119,30 @@ const RegisterScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  area: {
+  container: {
     flex: 1,
     backgroundColor: '#1F3A5F',
-  },
-  espacoTitulo: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  titulo: {
-    fontFamily: 'Roboto',
-    fontSize: 40,
-    color: 'white',
-  },
-  espacoSubtitulo: {
+  logoContainer: {
+    marginBottom: 50,
+    justifyContent: 'flex-end',
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  subtitulo: {
+  logo: {
+    width: 150,
+    height: 50,
+  },
+  formContainer: {
+    width: '80%',
+    flex: 5,
+  },
+  title: {
     color: 'white',
     fontSize: 30,
-    fontFamily: 'Roboto',
-  },
-  espacoInput: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '80%',
-    margin: 'auto',
+    marginBottom: 20,
+    textAlign: 'center',
   },
 });
 

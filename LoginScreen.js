@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import config from './config';
 
-const InputText = ({ label, value, onChangeText }) => (
+const InputText = ({ label, value, onChangeText, secureTextEntry }) => (
   <TextInput
     label={label}
     value={value}
     style={{ width: '100%' }}
     onChangeText={onChangeText}
+    secureTextEntry={secureTextEntry} 
   />
 );
 
@@ -30,26 +32,43 @@ const LoginScreen = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://192.168.1.3:8080/api/auth/login', {
+      const response = await fetch(`${config.apiBaseUrl}/api/auth/login`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body:`emailOrUsuario=${emailOrUsuario}&senha=${senha}`
+        body: `emailOrUsuario=${emailOrUsuario}&senha=${senha}`
       });
       const text = await response.text();
       if (text === "Usuário ou senha incorretos.") {
         Alert.alert("Erro", "Usuário ou senha incorretos.");
       } else if (text === "Usuário já está logado.") {
-        Alert.alert("Aviso", "Usuário já está logado.");
-        navigation.navigate('Homepage');
+        try {
+          const tokenUsuarioLogadoResponse = await fetch(`${config.apiBaseUrl}/api/auth/tokenUsuarioLogado?emailOrUsuario=${emailOrUsuario}`);
+          const tokenUsuarioLogado = await tokenUsuarioLogadoResponse.text();
+          console.log(tokenUsuarioLogado);
+          const response = await fetch(`${config.apiBaseUrl}/api/auth/logout?token=${tokenUsuarioLogado}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          if (response.ok) {
+            navigation.replace('Login');
+          } else {
+            console.error('Erro ao fazer logout');
+          }
+        } catch (error) {
+          console.error('Erro ao fazer logout:', error);
+        }
+        
       } else if (text === "Por favor, valide seu e-mail antes de fazer login.") {
         Alert.alert("Aviso", text, [
           { text: "OK", onPress: () => navigation.navigate('ValideEmail') }
         ]);
       } else {
         const token = text;
-        await fetch(`http://192.168.1.3:8080/api/auth/dadosUsuario?token=${token}`)
+        await fetch(`${config.apiBaseUrl}/api/auth/dadosUsuario?token=${token}`)
         .then(response => response.json())
         .then(dadosUsuario => {
           navigation.navigate('Homepage', { token, dadosUsuario});
@@ -88,7 +107,7 @@ const LoginScreen = () => {
                 label="Senha"
                 value={senha}
                 onChangeText={setSenha}
-                secureTextEntry={true}
+                secureTextEntry={true} 
               />
             </View>
             <View style={{ flex: 1 }}>

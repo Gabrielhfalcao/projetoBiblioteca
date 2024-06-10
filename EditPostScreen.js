@@ -2,22 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImagePicker from 'react-native-image-picker';
+import config from './config'; 
 
 const EditPostScreen = ({ route, navigation }) => {
-    const { post, token } = route.params;
-    const [titulo, setTitulo] = useState(post.titulo);
-    const [autor, setAutor] = useState(post.autor);
-    const [descricao, setDescricao] = useState(post.descricao);
-    const [fotoLivro1, setFotoLivro1] = useState(post.fotoLivro1);
-    const [fotoLivro2, setFotoLivro2] = useState(post.fotoLivro1);
-  
-    useEffect(() => {
-      setTitulo(post.titulo);
-      setAutor(post.autor);
-      setDescricao(post.descricao);
-    }, [post]);
+  const { post, token } = route.params;
+  const [titulo, setTitulo] = useState(post.titulo);
+  const [autor, setAutor] = useState(post.autor);
+  const [descricao, setDescricao] = useState(post.descricao);
+  const [fotoLivro1, setFotoLivro1] = useState(post.fotoLivro1);
+  const [fotoLivro2, setFotoLivro2] = useState(post.fotoLivro1);
 
-  console.log(post)
+  useEffect(() => {
+    setTitulo(post.titulo);
+    setAutor(post.autor);
+    setDescricao(post.descricao);
+  }, [post]);
 
   const selectImage = (imageNumber) => {
     const options = {
@@ -66,7 +65,7 @@ const EditPostScreen = ({ route, navigation }) => {
         });
       }
 
-      const response = await fetch(`http://192.168.1.3:8080/api/auth/editarPost/${postId}?token=${token}`, {
+      const response = await fetch(`${config.apiBaseUrl}/api/auth/editarPost/${post.id}?token=${token}`, {
         method: 'PUT',
         body: formData,
         headers: {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ActivityIndicator, TouchableOpacity, FlatList, Modal, Button } from 'react-native';
 import { SegmentedButtons } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import config from './config'; 
 
 const ProfileScreen = ({ route, navigation }) => {
   const [profileImage, setProfileImage] = useState(null);
@@ -10,12 +11,12 @@ const ProfileScreen = ({ route, navigation }) => {
   const dadosUsuario = route.params?.dadosUsuario;
   const token = route.params?.token;
 
-  console.log(token)
+  console.log(token);
 
   useEffect(() => {
     const getProfileImage = async () => {
       try {
-        const response = await fetch(`http://192.168.1.3:8080/api/auth/imagem-livro/${dadosUsuario.id}/foto1`);
+        const response = await fetch(`${config.apiBaseUrl}/api/auth/imagem-livro/${dadosUsuario.id}/foto1`);
         setProfileImage({ uri: response.url });
       } catch (error) {
         console.error(error);
@@ -32,7 +33,7 @@ const ProfileScreen = ({ route, navigation }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch(`http://192.168.1.3:8080/api/auth/logout?token=${token}`, {
+      const response = await fetch(`${config.apiBaseUrl}/api/auth/logout?token=${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -41,6 +42,7 @@ const ProfileScreen = ({ route, navigation }) => {
       if (response.ok) {
         navigation.replace('Login');
       } else {
+        console.error('Erro ao fazer logout');
       }
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
@@ -50,8 +52,7 @@ const ProfileScreen = ({ route, navigation }) => {
   if (!dadosUsuario) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Erro ao carregar perfil</Text>
-        <Text style={styles.error}>Dados do usuário não encontrados.</Text>
+        <Text style={styles.title}>Post adicionado a favoritos</Text>
       </View>
     );
   }
@@ -79,7 +80,7 @@ const ProfileScreen = ({ route, navigation }) => {
           />
         </View>
         <View style={styles.epacoListas}>
-          <PostList tab={selectedTab} dadosUsuario={dadosUsuario} navigation={navigation} token={token}/>
+          <PostList tab={selectedTab} dadosUsuario={dadosUsuario} navigation={navigation} token={token} />
         </View>
       </View>
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -97,8 +98,8 @@ const PostList = ({ tab, dadosUsuario, navigation, token }) => {
     const fetchPosts = async () => {
       try {
         const endpoint = tab === 'Publicados'
-          ? `http://192.168.1.3:8080/api/usuarios/${dadosUsuario.id}/publicacoes`
-          : `http://192.168.1.3:8080/api/usuarios/${dadosUsuario.id}/favoritos`;
+          ? `${config.apiBaseUrl}/api/usuarios/${dadosUsuario.id}/publicacoes`
+          : `${config.apiBaseUrl}/api/usuarios/${dadosUsuario.id}/favoritos`;
         const response = await fetch(endpoint);
         const data = await response.json();
         setPosts(data);
@@ -151,7 +152,7 @@ const PostPreview = ({ post, navigation, tab, token, removePost }) => {
 
   const confirmDelete = async () => {
     try {
-      const response = await fetch(`http://192.168.1.3:8080/api/auth/deletePost/${post.id}?token=${token}`, {
+      const response = await fetch(`${config.apiBaseUrl}/api/auth/deletePost/${post.id}?token=${token}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -173,7 +174,7 @@ const PostPreview = ({ post, navigation, tab, token, removePost }) => {
 
   const confirmRemoveFavorite = async () => {
     try {
-      const response = await fetch(`http://192.168.1.3:8080/api/auth/removeFavorito/${post.id}?token=${token}`, {
+      const response = await fetch(`${config.apiBaseUrl}/api/auth/removeFavorito/${post.id}?token=${token}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -195,20 +196,17 @@ const PostPreview = ({ post, navigation, tab, token, removePost }) => {
 
   return (
     <View style={styles.postPanel}>
-      <TouchableOpacity onPress={() => navigation.navigate('PostDetail', { postId: post.id })}>
-        <Image source={{ uri: `http://192.168.1.3:8080/api/auth/imagem-livro/${post.id}/foto1` }} style={styles.postImage} />
+      <TouchableOpacity onPress={() => navigation.navigate('PostDetailWithoutFavorite', { postId: post.id, token })}>
+        <Image source={{ uri: `${config.apiBaseUrl}/api/auth/imagem-livro/${post.id}/foto1` }} style={styles.postImage} />
         <Text style={styles.postTitle}>{post.livro.titulo}</Text>
         <Text style={styles.postAuthor}>{post.livro.autor}</Text>
         <Text style={styles.postUser}>{post.usuario.nome}</Text>
       </TouchableOpacity>
       <View style={styles.buttonsContainer}>
         {tab === 'Publicados' && (
-          <>
-            
-            <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
-              <Icon name="delete" size={20} color="white" />
-            </TouchableOpacity>
-          </>
+          <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
+            <Icon name="delete" size={20} color="white" />
+          </TouchableOpacity>
         )}
         {tab === 'Favoritados' && (
           <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleRemoveFavorite}>
@@ -258,7 +256,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 0,
+    marginTop: 40,
     color: 'white',
     textAlign: 'center',
   },
@@ -268,7 +266,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     color: 'white',
     textAlign: 'center',
-    marginBottom: 12
+    marginBottom: 12,
   },
   error: {
     color: 'red',
@@ -282,7 +280,6 @@ const styles = StyleSheet.create({
   segmentedControl: {
     marginTop: 5,
     alignItems: 'center',
-
   },
   segmentedButtons: {
     backgroundColor: '#1F3A5F',
@@ -340,47 +337,48 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    },
-    button: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    editButton: {
-      backgroundColor: '#ffd700',
-    },
-    deleteButton: {
-      backgroundColor: 'red',
-    },
-    modalContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-      backgroundColor: 'white',
-      padding: 20,
-      borderRadius: 10,
-      alignItems: 'center',
-    },
-    modalText: {
-      fontSize: 16,
-      marginBottom: 10,
-    },
-    modalButtons: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      width: '100%',
-    },
-    errorText: {
-      color: 'red',
-      fontSize: 16,
-      textAlign: 'center',
-      marginTop: 10,
-    },
-    });
-    
-    export default ProfileScreen;
+  },
+  button: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  editButton: {
+    backgroundColor: '#ffd700',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
+    width: '50%'
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+});
+
+export default ProfileScreen;

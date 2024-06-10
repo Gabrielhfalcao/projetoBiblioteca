@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import axios from 'axios';
+import config from './config'; 
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -8,7 +9,7 @@ const PostList = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('http://192.168.1.3:8080/api/posts');
+        const response = await axios.get(`${config.apiBaseUrl}/api/posts`);
         setPosts(response.data);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -25,7 +26,7 @@ const PostList = () => {
           <View style={styles.imageColumn}>
             {post.fotoLivro1 ? (
               <Image
-                source={{ uri: `http://192.168.1.3:8080/api/auth/imagem-livro/${post.id}/foto1` }}
+                source={{ uri: `${config.apiBaseUrl}/api/auth/imagem-livro/${post.id}/foto1` }}
                 style={styles.image}
               />
             ) : (

@@ -12,6 +12,7 @@ import PostDetailScreen from './PostDetailScreen';
 import ProfileScreen from './ProfileScreen';
 import EditPostScreen from './EditPostScreen'; 
 import AddPostScreen from './AddPostScreen'; 
+import PostDetailWithoutFavoriteScreen from './PostDetailWithoutFavoriteScreen';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,7 @@ const App = () => {
         <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} /> 
         <Stack.Screen name="EditPost" component={EditPostScreen} options={{ title: 'Editar Publicação' }} /> 
         <Stack.Screen name="AddPost" component={AddPostScreen} options={{ title: 'Adicionar Publicação' }} /> 
+        <Stack.Screen name="PostDetailWithoutFavorite" component={PostDetailWithoutFavoriteScreen} options={{ title: 'Detalhes da Publicação' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
